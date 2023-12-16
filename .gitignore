@@ -89,3 +89,7 @@ poetry-debug.toml
 poetry.toml
 .idea/
 .vscode/
+
+
+# json
+*.json

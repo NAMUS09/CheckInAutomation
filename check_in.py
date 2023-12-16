@@ -1,6 +1,6 @@
-import datetime
-import time
+import time as timeSleep
 
+from datetime import datetime, time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -8,19 +8,40 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def should_check_in():
-    week_day = datetime.datetime.now().weekday()
-    current_time = datetime.datetime.now().time()
-
-    is_time_9_to_11 = datetime.time(9, 0) <= current_time <= datetime.time(11, 0)
-
-    return is_time_9_to_11 and week_day != 5 and week_day != 6
+class CheckInConditon:
+    def __init__(self, start_time: str, end_time: str, weekdays: set()):
+        self.start_time = start_time
+        self.end_time = end_time
+        self.weekDays = weekdays
 
 
-def check_in():
+
+def should_check_in(checkIn: CheckInConditon):
+    # get user preference time
+    start_time_obj = datetime.strptime(checkIn.start_time, "%H:%M").time()
+    start_time_hour = start_time_obj.hour
+    start_time_min = start_time_obj.minute
+
+    end_time_obj = datetime.strptime(checkIn.end_time, "%H:%M").time()
+    end_time_hour = end_time_obj.hour
+    end_time_min = end_time_obj.minute
+
+    
+    # current 
+    current_date_time = datetime.now()
+    today = current_date_time.weekday()
+    current_time = current_date_time.time()
+
+    within_time_interval = time(start_time_hour, start_time_min) <= current_time <= time(end_time_hour, end_time_min)
+
+    return within_time_interval and today in checkIn.weekDays
+
+
+def check_in(self):
     url = "https://timesheet.cetastech.com/"
-    user_name = 'CIT288'
-    password = 'CIT288'
+    user_name = self.username
+    password = self.password
+
 
     chrome_options = Options()
     chrome_options.add_argument('--headless')
@@ -38,7 +59,7 @@ def check_in():
         password_input.send_keys(password)
         driver.execute_script("arguments[0].click();", login_button)
 
-        time.sleep(2)
+        timeSleep.sleep(2)
 
         print("😍😍 SUCCESS 😍😍 - Logged in for user:", user_name)
 
