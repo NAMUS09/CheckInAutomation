@@ -1,7 +1,7 @@
-import os
 import tkinter as tk
 from config import ConfigUI
 from PIL import Image, ImageTk
+from utils.common import getIconPath
 from utils.geometry import Geometry
 
 class MessageBox:
@@ -64,11 +64,9 @@ class MessageBox:
     def show_message(title: str, message):
         root = tk.Tk()
 
-        # Set window icon
-        # script_dir = os.path.dirname(os.path.abspath(__file__))
-        # image_path = os.path.join(script_dir, "assets", "clock.png")
-        # icon = tk.PhotoImage(file=image_path)
-        # root.iconphoto(True, icon)
+        path  = getIconPath()
+        if path:
+             root.iconbitmap(default=path)
 
         MessageBox(root, title, message)
         root.mainloop()

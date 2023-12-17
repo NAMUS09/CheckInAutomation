@@ -1,9 +1,11 @@
 import json
 import os
+import sys
 import tkinter as tk
-from tkinter import PhotoImage, StringVar, messagebox
+from tkinter import  StringVar, messagebox
 from timePicker import TimePicker
 from utils.geometry import Geometry
+from utils.common import getIconPath
 
 
 def show_message(message):
@@ -134,13 +136,11 @@ class ConfigUI:
     
     def showConfigUI(edit = False):
         root = tk.Tk()
-
-        # Set window icon
-        # script_dir = os.path.dirname(os.path.abspath(__file__))
-        # image_path = os.path.join(script_dir, "assets", "clock.png")
-        icon = PhotoImage(file="./assets/clock.png")
-        root.iconphoto(True, icon)
-
+        
+        path  = getIconPath()
+        if path:
+             root.iconbitmap(default=path)
+    
         ConfigUI(root, edit)
         root.mainloop()
 

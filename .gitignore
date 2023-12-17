@@ -93,3 +93,4 @@ poetry.toml
 
 # json
 *.json
+output
