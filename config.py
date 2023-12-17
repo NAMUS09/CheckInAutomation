@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import  StringVar, messagebox
 from timePicker import TimePicker
 from utils.geometry import Geometry
-from utils.common import getIconPath
+from utils.common import getIconPath, getDataPath
 
 
 def show_message(message):
@@ -13,7 +13,10 @@ def show_message(message):
 
 
 def preference_exists():
-        return os.path.exists('preferences.json')
+        script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        data_path = os.path.join(script_dir, "data", "preferences.json") 
+        return os.path.exists(data_path)
+        # return os.path.exists('preferences.json')
 
 
 class ConfigUI:
@@ -43,6 +46,7 @@ class ConfigUI:
         tk.Label(common_frame, text="Username:", pady=5).grid(row=0, column=0)
         self.username_entry = tk.Entry(common_frame, textvariable=self.username_var)
         self.password_entry_grid = self.username_entry.grid(row=0, column=1, columnspan=2, sticky="ew")
+        self.username_entry.focus_set()
 
         tk.Label(common_frame, text="Password:",pady=5).grid(row=1, column=0)
         self.password_entry = tk.Entry(common_frame, textvariable=self.password_var, show='*')
@@ -92,7 +96,9 @@ class ConfigUI:
 
     def load_preferences(self):
         if  preference_exists():
-            with open('preferences.json', 'r') as file:
+            script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+            data_path = os.path.join(script_dir, "data", "preferences.json") 
+            with open(data_path, 'r') as file:
                 preferences = json.load(file)
                 self.username_var = StringVar(value = preferences.get('username', ''))
                 self.password_var = StringVar(value = preferences.get('password', ''))
@@ -106,30 +112,51 @@ class ConfigUI:
 
 
     def save(self):
-        if not self.username_var.get():
-            show_message("Please enter a username")
-            self.username_entry.focus_set()
-            return
-        
-        if not self.password_var.get():
-            show_message("Please enter a password")
-            self.password_entry.focus_set()
-            return
+        try:
+            if not self.username_var.get():
+                show_message("Please enter a username")
+                self.username_entry.focus_set()
+                return
+            
+            if not self.password_var.get():
+                show_message("Please enter a password")
+                self.password_entry.focus_set()
+                return
+            
+            if not self.start_time_var.get():
+                show_message("Please enter check in time")
+                return
+            
+            
+            if not self.end_time_var.get():
+                show_message("Please enter end time")
+                return
+            
+            if self.weekdays_var == []:
+                show_message("Please select weekdays")
+                return
 
-        preferences = {
-            'username': self.username_var.get(),
-            'password': self.password_var.get(),
-            'start_time': self.start_time_var.get(),
-            'end_time': self.end_time_var.get(),
-            'weekdays': list(self.weekdays_var),
-        }
+            preferences = {
+                'username': self.username_var.get(),
+                'password': self.password_var.get(),
+                'start_time': self.start_time_var.get(),
+                'end_time': self.end_time_var.get(),
+                'weekdays': list(self.weekdays_var),
+            }
 
-        self.save_preferences(preferences)
-        self.root.destroy()
+            self.save_preferences(preferences)
+
+        except Exception as varname:
+            show_message("Something went wrong!!")
+
+        finally:
+            self.root.destroy()
 
 
     def save_preferences(self,preferences):
-        with open('preferences.json', 'w') as file:
+        script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        data_path = os.path.join(script_dir, "data", "preferences.json") 
+        with open(data_path, 'w') as file:
             json.dump(preferences, file)
 
         messagebox.showinfo("Preferences Saved", "User preferences have been saved.")

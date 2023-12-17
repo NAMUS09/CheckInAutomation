@@ -1,7 +1,9 @@
+import os
+import sys
 import tkinter as tk
 from config import ConfigUI
 from PIL import Image, ImageTk
-from utils.common import getIconPath
+from utils.common import getIconPath 
 from utils.geometry import Geometry
 
 class MessageBox:
@@ -10,7 +12,10 @@ class MessageBox:
         self.root = root
         self.root.title(title)
 
-        png_path = "./assets/info.png"
+
+        # png_path = "./assets/info.png"
+        script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        png_path  = os.path.join(script_dir, "assets", "info.png")
 
         common_frame = tk.Frame(root, padx=5, pady=3)
         common_frame.grid(row=0, column=0, sticky="nsew")
@@ -28,7 +33,8 @@ class MessageBox:
         info_icon.thumbnail((35, 35))
         info_icon = ImageTk.PhotoImage(info_icon)
         info_label = tk.Label(common_frame, image=info_icon, text=message, compound="left", padx=10)
-        info_label.image = info_icon
+        if info_icon:
+            info_label.image = info_icon
         info_label.grid(row=2, column=0, columnspan=1, pady=2, padx=2)
 
 

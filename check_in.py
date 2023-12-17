@@ -74,7 +74,7 @@ def check_in(self):
         check_in_buttons = driver.find_elements(By.ID, 'btnCheckIn')
 
         if check_in_buttons:
-            # driver.execute_script("arguments[0].click();", check_in_buttons[0])
+            driver.execute_script("arguments[0].click();", check_in_buttons[0])
             print("😍😍 SUCCESS 😍😍 - Checked in for user:", user_name)
             return "Checked in successfully for user: {}".format(user_name)
 

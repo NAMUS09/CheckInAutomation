@@ -1,7 +1,10 @@
 import json
+import os
+import sys
 
 from config import ConfigUI, preference_exists
 from check_in import check_in_thread
+from utils.common import getDataPath
 
 
 class CheckInApp:
@@ -22,7 +25,9 @@ class CheckInApp:
 
     def load_preferences(self):
         if  preference_exists():
-            with open('preferences.json', 'r') as file:
+            script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+            data_path = os.path.join(script_dir, "data", "preferences.json") 
+            with open(data_path, 'r') as file:
                 preferences = json.load(file)
                 self.username = preferences.get('username', '')
                 self.password = preferences.get('password', '')
