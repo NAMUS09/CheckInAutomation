@@ -12,17 +12,11 @@ def show_message(message):
     messagebox.showinfo("Configuration Alert", message)
 
 
-def preference_exists():
-        script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-        data_path = os.path.join(script_dir, "data", "preferences.json") 
-        return os.path.exists(data_path)
-        # return os.path.exists('preferences.json')
-
-
 class ConfigUI:
     def __init__(self, root, edit: bool):
         self.root = root
         self.edit = edit
+        self.cancelled = False
         title = "Configuration" if not edit else "Edit Configuration"
         self.root.title(title)
 
@@ -95,9 +89,8 @@ class ConfigUI:
     
 
     def load_preferences(self):
-        if  preference_exists():
-            script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-            data_path = os.path.join(script_dir, "data", "preferences.json") 
+        data_path = getDataPath()
+        if data_path:
             with open(data_path, 'r') as file:
                 preferences = json.load(file)
                 self.username_var = StringVar(value = preferences.get('username', ''))
@@ -105,9 +98,10 @@ class ConfigUI:
                 self.start_time_var = StringVar(value = preferences.get('start_time', ''))
                 self.end_time_var = StringVar(value = preferences.get('end_time', ''))
                 self.weekdays_var = set(preferences.get('weekdays', []))
+        
 
-    
     def cancel(self):
+        self.cancelled = True
         self.root.destroy()
 
 
@@ -153,20 +147,19 @@ class ConfigUI:
             self.root.destroy()
 
 
-    def save_preferences(self,preferences):
-        script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-        data_directory = os.path.join(script_dir, "data")
+    def save_preferences(self, preferences):
+        data_path = getDataPath() 
 
-        if not os.path.exists(data_directory):
-            os.makedirs(data_directory)
+        try:
+            with open(data_path, 'w') as file:
+                json.dump(preferences, file, indent=2)
 
-        data_path = os.path.join(script_dir, "data", "preferences.json") 
-        
-        with open(data_path, 'w') as file:
-            json.dump(preferences, file)
+            messagebox.showinfo("Preferences Saved", "User preferences have been saved.")
 
-        messagebox.showinfo("Preferences Saved", "User preferences have been saved.")
-    
+        except Exception as ex:
+            show_message(ex)
+
+
     def showConfigUI(edit = False):
         root = tk.Tk()
         
@@ -174,7 +167,9 @@ class ConfigUI:
         if path:
              root.iconbitmap(default=path)
     
-        ConfigUI(root, edit)
+        config = ConfigUI(root, edit)
         root.mainloop()
+
+        return config.cancelled
 
     

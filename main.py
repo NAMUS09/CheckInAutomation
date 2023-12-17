@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-from config import ConfigUI, preference_exists
+from config_ui import ConfigUI, preference_exists
 from check_in import check_in_thread
 from utils.common import getDataPath
 
@@ -17,23 +17,30 @@ class CheckInApp:
         self.end_time =  ""
         self.weekdays =  set()
 
-        if not preference_exists():
-            ConfigUI.showConfigUI()
+        self.cancelled = False
 
-        self.load_preferences()
+        data_path = getDataPath() 
+
+        if not os.path.exists(data_path):
+            self.cancelled = ConfigUI.showConfigUI()
+
+
+        self.preference_exists = os.path.exists(data_path)
+
+        if not self.cancelled and self.preference_exists:
+            self.load_preferences()
 
 
     def load_preferences(self):
-        if  preference_exists():
-            script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-            data_path = os.path.join(script_dir, "data", "preferences.json") 
-            with open(data_path, 'r') as file:
-                preferences = json.load(file)
-                self.username = preferences.get('username', '')
-                self.password = preferences.get('password', '')
-                self.start_time = preferences.get('start_time', '')
-                self.end_time = preferences.get('end_time', '')
-                self.weekdays = set(preferences.get('weekdays', []))
+        data_path = getDataPath()
+
+        with open(data_path, 'r') as file:
+            preferences = json.load(file)
+            self.username = preferences.get('username', '')
+            self.password = preferences.get('password', '')
+            self.start_time = preferences.get('start_time', '')
+            self.end_time = preferences.get('end_time', '')
+            self.weekdays = set(preferences.get('weekdays', []))
     
     def check_in(self):
         check_in_thread(self)
@@ -41,6 +48,7 @@ class CheckInApp:
 
 if __name__ == '__main__':
     app = CheckInApp()
-    if preference_exists():
+
+    if not app.cancelled and app.preference_exists:
         app.check_in()
    

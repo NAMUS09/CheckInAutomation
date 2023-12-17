@@ -1,12 +1,8 @@
 import os
 import sys
 
-
-def getScriptDir():
-    return getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-
 def getIconPath():
-    script_dir = getScriptDir()
+    script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
     icon_path = os.path.join(script_dir, "assets", "clock.ico")
 
     if os.path.exists(icon_path):
@@ -14,8 +10,12 @@ def getIconPath():
     else:
         return None
 
-    
+
 def getDataPath():
-    script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-    return os.path.join(script_dir, "data", "preferences.json")
+    data_directory = os.path.join(os.path.expanduser("~"), ".checkInAutomation")
+    
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    return os.path.join(data_directory, "preferences.json")
 

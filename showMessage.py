@@ -1,7 +1,7 @@
 import os
 import sys
 import tkinter as tk
-from config import ConfigUI
+from config_ui import ConfigUI
 from PIL import Image, ImageTk
 from utils.common import getIconPath 
 from utils.geometry import Geometry
