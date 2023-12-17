@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from showMessage import MessageBox
 
 
 class CheckInConditon:
@@ -42,7 +43,6 @@ def check_in(self):
     user_name = self.username
     password = self.password
 
-
     chrome_options = Options()
     chrome_options.add_argument('--headless')
 
@@ -74,7 +74,7 @@ def check_in(self):
         check_in_buttons = driver.find_elements(By.ID, 'btnCheckIn')
 
         if check_in_buttons:
-            driver.execute_script("arguments[0].click();", check_in_buttons[0])
+            # driver.execute_script("arguments[0].click();", check_in_buttons[0])
             print("😍😍 SUCCESS 😍😍 - Checked in for user:", user_name)
             return "Checked in successfully for user: {}".format(user_name)
 
@@ -84,5 +84,21 @@ def check_in(self):
 
     finally:
         driver.quit()
+
+
+
+def check_in_thread(self):
+    current_day = datetime.now().weekday()
+
+    title = "Check-In Status"
+    if should_check_in(self):
+        status = check_in(self)
+        MessageBox.show_message(title, status)
+
+    elif current_day not in self.weekdays:
+        MessageBox.show_message(title, "Check-in not triggered - Today is not a configured weekday")
+        
+    else:
+        MessageBox.show_message(title, "Check-in not triggered - Not within the configured time frame")
 
 

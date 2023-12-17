@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import StringVar, ttk
+from tkinter import  ttk
 
 class TimePicker(tk.Frame):
     def __init__(self, master=None, time=None, **kwargs):

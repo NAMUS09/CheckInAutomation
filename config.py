@@ -1,9 +1,9 @@
 import json
 import os
 import tkinter as tk
-from tkinter import messagebox, ttk
-from tkinter import font
+from tkinter import PhotoImage, StringVar, messagebox
 from timePicker import TimePicker
+from utils.geometry import Geometry
 
 
 def show_message(message):
@@ -11,13 +11,15 @@ def show_message(message):
 
 
 def preference_exists():
-    return os.path.exists('preferences.json')
+        return os.path.exists('preferences.json')
 
-     
+
 class ConfigUI:
-    def __init__(self, root):
+    def __init__(self, root, edit: bool):
         self.root = root
-        self.root.title("Configuration")
+        self.edit = edit
+        title = "Configuration" if not edit else "Edit Configuration"
+        self.root.title(title)
 
         # Variables to store user input
         self.username_var = tk.StringVar()
@@ -26,6 +28,10 @@ class ConfigUI:
         self.end_time_var = tk.StringVar(value="11:00")
         default_weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         self.weekdays_var = [i for i, day in enumerate(default_weekdays) if day in default_weekdays]
+
+        if edit:
+            self.load_preferences()
+
 
         common_frame = tk.Frame(root, padx=20, pady=10)  # Add padding to the common frame
         common_frame.grid(row=0, column=0)
@@ -59,27 +65,38 @@ class ConfigUI:
             self.weekday_checkboxes.append((day, var))
 
 
-        tk.Button(common_frame, text="Save", width=15, bg="#4CAF50", fg="white", command=self.save).grid(row=8, column=0, columnspan=3, pady=10)
-        tk.Button(common_frame, text="Cancel", width=10, bg="#A9A9A9", fg="#363636", command=self.cancel).grid(row=8, column=2, columnspan=1, pady=10)
+        # Frame for footer
+        footer_frame = tk.Frame(root, bg="#d9d9d9")
+        footer_frame.grid(row=1, column=0, columnspan=5, sticky="nsew")
 
+        save_button = tk.Button(footer_frame, text = 'Save', fg = 'white', bg="#7e98de", bd=0 ,width=8,command=self.save) 
+        save_button.pack(side="right", pady=8, padx=5)
 
-        # Calculate the center position
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
-        window_width = 350  # Set your desired width
-        window_height = 280  # Set your desired height
-        x_position = (screen_width - window_width) // 2
-        y_position = (screen_height - window_height) // 2
+        cancel_button = tk.Button(footer_frame, text = 'Cancel', fg = '#363636', bg="white", bd=0, width=8,command=self.cancel) 
+        cancel_button.pack(side="right", pady=8, padx=5)
+
 
         # Disable maximize button and set initial size
         self.root.resizable(False, False)
-        geometry_string = f"{window_width}x{window_height}+{x_position}+{y_position}"
+        geometry_string = Geometry.calculateCenter(root, 330,280)
         root.geometry(geometry_string)
+
 
 
     def update_selected_days(self):
         selected_days = [i for i, (day, var) in enumerate(self.weekday_checkboxes) if var.get()]
         self.weekdays_var = selected_days
+    
+
+    def load_preferences(self):
+        if  preference_exists():
+            with open('preferences.json', 'r') as file:
+                preferences = json.load(file)
+                self.username_var = StringVar(value = preferences.get('username', ''))
+                self.password_var = StringVar(value = preferences.get('password', ''))
+                self.start_time_var = StringVar(value = preferences.get('start_time', ''))
+                self.end_time_var = StringVar(value = preferences.get('end_time', ''))
+                self.weekdays_var = set(preferences.get('weekdays', []))
 
     
     def cancel(self):
@@ -105,31 +122,26 @@ class ConfigUI:
             'weekdays': list(self.weekdays_var),
         }
 
-        save_preferences(preferences)
+        self.save_preferences(preferences)
         self.root.destroy()
 
+
+    def save_preferences(self,preferences):
+        with open('preferences.json', 'w') as file:
+            json.dump(preferences, file)
+
+        messagebox.showinfo("Preferences Saved", "User preferences have been saved.")
     
-def load_config_ui():
-    root = tk.Tk()
-    ConfigUI(root)
-    root.mainloop()
+    def showConfigUI(edit = False):
+        root = tk.Tk()
 
+        # Set window icon
+        # script_dir = os.path.dirname(os.path.abspath(__file__))
+        # image_path = os.path.join(script_dir, "assets", "clock.png")
+        icon = PhotoImage(file="./assets/clock.png")
+        root.iconphoto(True, icon)
 
-def load_preferences(self):
-    if  preference_exists():
-        with open('preferences.json', 'r') as file:
-            preferences = json.load(file)
-            self.username = preferences.get('username', '')
-            self.password = preferences.get('password', '')
-            self.start_time = preferences.get('start_time', '')
-            self.end_time = preferences.get('end_time', '')
-            self.weekdays = preferences.get('weekdays', '')
+        ConfigUI(root, edit)
+        root.mainloop()
 
-
-def save_preferences(preferences):
-    with open('preferences.json', 'w') as file:
-        json.dump(preferences, file)
-
-    messagebox.showinfo("Preferences Saved", "User preferences have been saved.")
-
-
+    
