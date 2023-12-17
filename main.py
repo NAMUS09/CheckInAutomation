@@ -1,8 +1,7 @@
 import json
 import os
-import sys
 
-from config_ui import ConfigUI, preference_exists
+from config_ui import ConfigUI
 from check_in import check_in_thread
 from utils.common import getDataPath
 
