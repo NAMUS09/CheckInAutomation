@@ -146,8 +146,8 @@ class ConfigUI:
 
             self.save_preferences(preferences)
 
-        except Exception as varname:
-            show_message("Something went wrong!!")
+        except Exception as error:
+            show_message(error)
 
         finally:
             self.root.destroy()
@@ -155,7 +155,13 @@ class ConfigUI:
 
     def save_preferences(self,preferences):
         script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        data_directory = os.path.join(script_dir, "data")
+
+        if not os.path.exists(data_directory):
+            os.makedirs(data_directory)
+
         data_path = os.path.join(script_dir, "data", "preferences.json") 
+        
         with open(data_path, 'w') as file:
             json.dump(preferences, file)
 

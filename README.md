@@ -47,6 +47,5 @@ python main_app.py
 Build the exe:
 
 ```bash
-pyinstaller --noconsole --onefile --clean --icon=assets\clock.ico --add-data 'assets;assets' --name=CheckInAutomation main.py
-
+pyinstaller --noconsole --onefile --clean --icon=assets\clock.ico --add-data 'assets;assets' --add-data 'data;data'  --name=CheckInAutomation main.py
 ```
