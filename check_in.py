@@ -13,7 +13,7 @@ class CheckInConditon:
     def __init__(self, start_time: str, end_time: str, weekdays: set()):
         self.start_time = start_time
         self.end_time = end_time
-        self.weekDays = weekdays
+        self.weekdays = weekdays
 
 
 
@@ -35,7 +35,7 @@ def should_check_in(checkIn: CheckInConditon):
 
     within_time_interval = time(start_time_hour, start_time_min) <= current_time <= time(end_time_hour, end_time_min)
 
-    return within_time_interval and today in checkIn.weekDays
+    return within_time_interval and today in checkIn.weekdays
 
 
 def check_in(self):
@@ -80,7 +80,7 @@ def check_in(self):
 
     except Exception as e:
         print('😭😭 FAILED 😭😭 - Error:', str(e))
-        return "Check-in failed"
+        return "Check-in failed!! Please try again later."
 
     finally:
         driver.quit()

@@ -33,7 +33,7 @@ Automate the check-in process for a web application using Selenium.
 2. Install dependencies:
 
    ```bash
-   pip install selenium, pillow, pyinstaller
+   pip install selenium  pillow pyinstaller
    ```
 
 ### Usage
