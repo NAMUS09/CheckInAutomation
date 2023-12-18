@@ -1,5 +1,6 @@
 import json
 import os
+from addToStartup import AddToStartup
 
 from config_ui import ConfigUI
 from check_in import check_in_thread
@@ -46,6 +47,9 @@ class CheckInApp:
 
 
 if __name__ == '__main__':
+    if not AddToStartup.is_added_to_startup():
+        AddToStartup.add_to_startup()
+
     app = CheckInApp()
 
     if not app.cancelled and app.preference_exists:

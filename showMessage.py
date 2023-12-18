@@ -54,6 +54,10 @@ class MessageBox:
         self.root.update_idletasks()
 
 
+        # Bring the dialog window to the top
+        root.attributes('-topmost', True)
+        root.focus_force()
+
         geometry_string = Geometry.calculateCenter(root, self.root.winfo_reqwidth(), self.root.winfo_reqheight())
         root.geometry(geometry_string)
 
@@ -67,7 +71,7 @@ class MessageBox:
         self.root.destroy()
         
 
-    def show_message(title: str, message):
+    def show_message_edit_config(title: str, message):
         root = tk.Tk()
 
         path  = getIconPath()

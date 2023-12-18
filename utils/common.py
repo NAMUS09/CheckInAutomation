@@ -1,5 +1,7 @@
 import os
 import sys
+from tkinter import messagebox
+import requests
 
 def getIconPath():
     script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
@@ -18,4 +20,13 @@ def getDataPath():
         os.makedirs(data_directory)
 
     return os.path.join(data_directory, "preferences.json")
+
+
+def show_message(title, message):
+    messagebox.showinfo(title, message)
+    
+
+def url_reachable(url):
+    req = requests.head(url)
+    return req.status_code == 200
 

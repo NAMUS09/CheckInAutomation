@@ -1,12 +1,13 @@
 import time as timeSleep
 
-from datetime import datetime, time
 from selenium import webdriver
+from showMessage import MessageBox
+from datetime import datetime, time
 from selenium.webdriver.common.by import By
+from utils.common import url_reachable, show_message
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from showMessage import MessageBox
 
 
 class CheckInConditon:
@@ -40,6 +41,12 @@ def should_check_in(checkIn: CheckInConditon):
 
 def check_in(self):
     url = "https://timesheet.cetastech.com/"
+
+    if not url_reachable(url):
+        show_message("Error", "Timesheet url is not reachable at the moment!!")
+        return
+    
+
     user_name = self.username
     password = self.password
 
@@ -61,13 +68,23 @@ def check_in(self):
 
         timeSleep.sleep(2)
 
+        check_id = driver.find_elements(By.ID, 'myid')
+
+        if not check_id:
+            show_message("Alert", "Couldn't login. Please check your username and password")
+            return
+
         print("😍😍 SUCCESS 😍😍 - Logged in for user:", user_name)
 
         modal = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, 'myAttandanceModal'))
         )
 
-        if not modal.value_of_css_property('display') == 'block':
+        WebDriverWait(driver, 15).until(
+            lambda driver: modal.value_of_css_property('display') == 'block'
+        )
+
+        if modal.value_of_css_property('display') != 'block':
             print("Already checked in for user:", user_name)
             return "Already checked in for user: {}".format(user_name)
 
@@ -89,16 +106,16 @@ def check_in(self):
 
 def check_in_thread(self):
     current_day = datetime.now().weekday()
-
     title = "Check-In Status"
+
     if should_check_in(self):
         status = check_in(self)
-        MessageBox.show_message(title, status)
+        MessageBox.show_message_edit_config(title, status)
 
     elif current_day not in self.weekdays:
-        MessageBox.show_message(title, "Check-in not triggered - Today is not a configured weekday")
+        MessageBox.show_message_edit_config(title, "Check-in not triggered - Today is not a configured weekday")
         
     else:
-        MessageBox.show_message(title, "Check-in not triggered - Not within the configured time frame")
+        MessageBox.show_message_edit_config(title, "Check-in not triggered - Not within the configured time frame")
 
 

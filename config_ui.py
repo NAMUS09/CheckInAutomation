@@ -1,15 +1,9 @@
 import json
-import os
-import sys
 import tkinter as tk
 from tkinter import  StringVar, messagebox
 from timePicker import TimePicker
 from utils.geometry import Geometry
-from utils.common import getIconPath, getDataPath
-
-
-def show_message(message):
-    messagebox.showinfo("Configuration Alert", message)
+from utils.common import getIconPath, getDataPath, show_message
 
 
 class ConfigUI:
@@ -19,6 +13,8 @@ class ConfigUI:
         self.cancelled = False
         title = "Configuration" if not edit else "Edit Configuration"
         self.root.title(title)
+
+        self.alert_title = "Configuration Alert"
 
         # Variables to store user input
         self.username_var = tk.StringVar()
@@ -75,12 +71,15 @@ class ConfigUI:
         cancel_button = tk.Button(footer_frame, text = 'Cancel', fg = '#363636', bg="white", bd=0, width=8,command=self.cancel) 
         cancel_button.pack(side="right", pady=8, padx=5)
 
+        # Bring the dialog window to the top
+        root.attributes('-topmost', True)
+        root.focus_force()
 
         # Disable maximize button and set initial size
         self.root.resizable(False, False)
+
         geometry_string = Geometry.calculateCenter(root, 330,280)
         root.geometry(geometry_string)
-
 
 
     def update_selected_days(self):
@@ -108,26 +107,26 @@ class ConfigUI:
     def save(self):
         try:
             if not self.username_var.get():
-                show_message("Please enter a username")
+                show_message(self.alert_title,"Please enter a username")
                 self.username_entry.focus_set()
                 return
             
             if not self.password_var.get():
-                show_message("Please enter a password")
+                show_message(self.alert_title,"Please enter a password")
                 self.password_entry.focus_set()
                 return
             
             if not self.start_time_var.get():
-                show_message("Please enter check in time")
+                show_message(self.alert_title,"Please enter check in time")
                 return
             
             
             if not self.end_time_var.get():
-                show_message("Please enter end time")
+                show_message(self.alert_title,"Please enter end time")
                 return
             
             if self.weekdays_var == []:
-                show_message("Please select weekdays")
+                show_message(self.alert_title,"Please select weekdays")
                 return
 
             preferences = {
@@ -141,7 +140,7 @@ class ConfigUI:
             self.save_preferences(preferences)
 
         except Exception as error:
-            show_message(error)
+            show_message(self.alert_title,error)
 
         finally:
             self.root.destroy()
@@ -154,10 +153,10 @@ class ConfigUI:
             with open(data_path, 'w') as file:
                 json.dump(preferences, file, indent=2)
 
-            messagebox.showinfo("Preferences Saved", "User preferences have been saved.")
+            show_message("Preferences Saved", "User preferences have been saved.")
 
         except Exception as ex:
-            show_message(ex)
+            show_message(self.alert_title, ex)
 
 
     def showConfigUI(edit = False):
