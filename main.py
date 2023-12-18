@@ -1,6 +1,6 @@
 import json
 import os
-from addToStartup import AddToStartup
+from addToStartup import add_to_startup, is_added_to_startup
 
 from config_ui import ConfigUI
 from check_in import check_in_thread
@@ -47,8 +47,8 @@ class CheckInApp:
 
 
 if __name__ == '__main__':
-    if not AddToStartup.is_added_to_startup():
-        AddToStartup.add_to_startup()
+    if not is_added_to_startup():
+        add_to_startup()
 
     app = CheckInApp()
 

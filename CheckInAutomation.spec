@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['uninstall\\main.py'],
+    ['main.py'],
     pathex=[],
     binaries=[],
     datas=[('assets', 'assets')],
@@ -34,5 +34,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['assets\\uninstall.ico'],
+    icon=['assets\\clock.ico'],
 )
