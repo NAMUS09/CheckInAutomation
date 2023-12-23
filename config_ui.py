@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import  StringVar, messagebox
 from timePicker import TimePicker
 from utils.geometry import Geometry
-from utils.common import getIconPath, getDataPath, show_message
+from utils.common import decrypt_data, encrypt_data, getIconPath, getDataPath, show_message
 
 
 class ConfigUI:
@@ -65,7 +65,7 @@ class ConfigUI:
         footer_frame = tk.Frame(root, bg="#d9d9d9")
         footer_frame.grid(row=1, column=0, columnspan=5, sticky="nsew")
 
-        save_button = tk.Button(footer_frame, text = 'Save', fg = 'white', bg="#7e98de", bd=0 ,width=8,command=self.save) 
+        save_button = tk.Button(footer_frame, text = 'Save', fg = 'white', bg="#7e98de", bd=0 ,width=8,command=self.validate) 
         save_button.pack(side="right", pady=8, padx=5)
 
         cancel_button = tk.Button(footer_frame, text = 'Cancel', fg = '#363636', bg="white", bd=0, width=8,command=self.cancel) 
@@ -89,14 +89,17 @@ class ConfigUI:
 
     def load_preferences(self):
         data_path = getDataPath()
+        
         if data_path:
-            with open(data_path, 'r') as file:
-                preferences = json.load(file)
-                self.username_var = StringVar(value = preferences.get('username', ''))
-                self.password_var = StringVar(value = preferences.get('password', ''))
-                self.start_time_var = StringVar(value = preferences.get('start_time', ''))
-                self.end_time_var = StringVar(value = preferences.get('end_time', ''))
-                self.weekdays_var = set(preferences.get('weekdays', []))
+            with open(data_path, 'rb') as file:
+                encrypted_data = file.read()
+                preferences = decrypt_data(encrypted_data)
+                
+            self.username_var = StringVar(value = preferences.get('username', ''))
+            self.password_var = StringVar(value = preferences.get('password', ''))
+            self.start_time_var = StringVar(value = preferences.get('start_time', ''))
+            self.end_time_var = StringVar(value = preferences.get('end_time', ''))
+            self.weekdays_var = set(preferences.get('weekdays', []))
         
 
     def cancel(self):
@@ -104,7 +107,7 @@ class ConfigUI:
         self.root.destroy()
 
 
-    def save(self):
+    def validate(self):
         try:
             if not self.username_var.get():
                 show_message(self.alert_title,"Please enter a username")
@@ -129,15 +132,7 @@ class ConfigUI:
                 show_message(self.alert_title,"Please select weekdays")
                 return
 
-            preferences = {
-                'username': self.username_var.get(),
-                'password': self.password_var.get(),
-                'start_time': self.start_time_var.get(),
-                'end_time': self.end_time_var.get(),
-                'weekdays': list(self.weekdays_var),
-            }
-
-            self.save_preferences(preferences)
+            self.save_preferences()
 
         except Exception as error:
             show_message(self.alert_title,error)
@@ -146,12 +141,22 @@ class ConfigUI:
             self.root.destroy()
 
 
-    def save_preferences(self, preferences):
+    def save_preferences(self):
+        preferences = {
+            'username': self.username_var.get(),
+            'password': self.password_var.get(),
+            'start_time': self.start_time_var.get(),
+            'end_time': self.end_time_var.get(),
+            'weekdays': list(self.weekdays_var),
+        }
+
+        encoded_data = encrypt_data(preferences)
+
         data_path = getDataPath() 
 
         try:
-            with open(data_path, 'w') as file:
-                json.dump(preferences, file, indent=2)
+            with open(data_path, 'wb') as file:
+                file.write(encoded_data)
 
             show_message("Preferences Saved", "User preferences have been saved.")
 

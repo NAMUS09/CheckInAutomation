@@ -4,7 +4,7 @@ from addToStartup import add_to_startup, is_added_to_startup
 
 from config_ui import ConfigUI
 from check_in import check_in_thread
-from utils.common import getDataPath
+from utils.common import decrypt_data, getDataPath
 
 
 class CheckInApp:
@@ -34,13 +34,15 @@ class CheckInApp:
     def load_preferences(self):
         data_path = getDataPath()
 
-        with open(data_path, 'r') as file:
-            preferences = json.load(file)
-            self.username = preferences.get('username', '')
-            self.password = preferences.get('password', '')
-            self.start_time = preferences.get('start_time', '')
-            self.end_time = preferences.get('end_time', '')
-            self.weekdays = set(preferences.get('weekdays', []))
+        with open(data_path, 'rb') as file:
+            encrypted_data = file.read()
+            preferences = decrypt_data(encrypted_data)
+
+        self.username = preferences.get('username', '')
+        self.password = preferences.get('password', '')
+        self.start_time = preferences.get('start_time', '')
+        self.end_time = preferences.get('end_time', '')
+        self.weekdays = set(preferences.get('weekdays', []))
     
     def check_in(self):
         check_in_thread(self)

@@ -1,7 +1,6 @@
 import os
 import sys
 import tkinter as tk
-from tkinter import ttk
 from config_ui import ConfigUI
 from PIL import Image, ImageTk
 from utils.common import getIconPath 
@@ -71,7 +70,7 @@ class MessageBox:
         root.geometry(geometry_string)
 
 
-    def edit_config_clicked(self):
+    def edit_config_clicked(self, event):
         self.root.destroy()
         ConfigUI.showConfigUI(True)
 

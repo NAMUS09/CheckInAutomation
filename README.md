@@ -19,6 +19,7 @@ Automate the check-in process for a web application using Selenium.
 - Pillow library
 - Pyinstaller library
 - Requests library
+- Cryptography library
 
 ## Getting Started
 
@@ -34,7 +35,7 @@ Automate the check-in process for a web application using Selenium.
 2. Install dependencies:
 
    ```bash
-   pip install selenium pillow pyinstaller requests
+   pip install selenium pillow pyinstaller requests cryptography
    ```
 
 ### Usage
