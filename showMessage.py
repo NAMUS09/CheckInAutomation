@@ -1,6 +1,7 @@
 import os
 import sys
 import tkinter as tk
+from tkinter import ttk
 from config_ui import ConfigUI
 from PIL import Image, ImageTk
 from utils.common import getIconPath 
@@ -43,8 +44,16 @@ class MessageBox:
         footer_frame.grid(row=1, column=0, columnspan=3, sticky="nsew")
 
         # OK Button in the frame
+ 
         ok_button = tk.Button(footer_frame, text = 'OK', fg = 'black', bg="white", bd=0, width=8,command=self.ok_button_clicked) 
+       
         ok_button.pack(side="right", pady=8, padx=5)
+
+        # Bind the Enter key to trigger the OK button
+        root.bind('<Return>', lambda event: ok_button.invoke())
+
+        # Set focus on the OK button
+        root.after(1, lambda: ok_button.focus_set())
 
 
         # Disable maximize button and set initial size
@@ -62,7 +71,7 @@ class MessageBox:
         root.geometry(geometry_string)
 
 
-    def edit_config_clicked(self, event):
+    def edit_config_clicked(self):
         self.root.destroy()
         ConfigUI.showConfigUI(True)
 
@@ -71,13 +80,13 @@ class MessageBox:
         self.root.destroy()
         
 
-    def show_message_edit_config(title: str, message):
-        root = tk.Tk()
+def show_message_edit_config(title: str, message):
+    root = tk.Tk()
 
-        path  = getIconPath()
-        if path:
-             root.iconbitmap(default=path)
+    path  = getIconPath()
+    if path:
+            root.iconbitmap(default=path)
 
-        MessageBox(root, title, message)
-        root.mainloop()
+    MessageBox(root, title, message)
+    root.mainloop()
 

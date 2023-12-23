@@ -1,7 +1,7 @@
 import time as timeSleep
 
 from selenium import webdriver
-from showMessage import MessageBox
+from showMessage import show_message_edit_config
 from datetime import datetime, time
 from selenium.webdriver.common.by import By
 from utils.common import url_reachable, show_message
@@ -37,6 +37,13 @@ def should_check_in(checkIn: CheckInConditon):
     within_time_interval = time(start_time_hour, start_time_min) <= current_time <= time(end_time_hour, end_time_min)
 
     return within_time_interval and today in checkIn.weekdays
+
+
+
+def get_check_in_time(driver: webdriver):
+    date_time_element = driver.find_elements(By.ID, 'spanInDateTime')[0]
+    return date_time_element.get_attribute('innerHTML')
+    
 
 
 def check_in(self):
@@ -76,24 +83,30 @@ def check_in(self):
 
         print("😍😍 SUCCESS 😍😍 - Logged in for user:", user_name)
 
-        modal = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, 'myAttandanceModal'))
-        )
+        check_in_time = get_check_in_time(driver)
 
-        WebDriverWait(driver, 15).until(
-            lambda driver: modal.value_of_css_property('display') == 'block'
-        )
-
-        if modal.value_of_css_property('display') != 'block':
+        if check_in_time != None and check_in_time != '':
             print("Already checked in for user:", user_name)
-            return "Already checked in for user: {}".format(user_name)
+            return f"User {user_name} has already checked in at {check_in_time}"
+            
+        check_in_button = driver.find_elements(By.ID, 'btnCheckIn')[0]
 
-        check_in_buttons = driver.find_elements(By.ID, 'btnCheckIn')
+        if not check_in_button:
+            print("User logged in but couldn't check in")
+            return f"User {user_name} is logged in but couldn't complete the check-in process"
 
-        if check_in_buttons:
-            driver.execute_script("arguments[0].click();", check_in_buttons[0])
-            print("😍😍 SUCCESS 😍😍 - Checked in for user:", user_name)
-            return "Checked in successfully for user: {}".format(user_name)
+        check_in_button.click()
+        print("😍😍 SUCCESS 😍😍 - Checked in for user:", user_name)
+
+        # get element with the 'onclick' attribute set to 'openAttendance()'
+        attendance_icon = driver.find_elements(By.CSS_SELECTOR, "[onclick='openAttendance()']")[0]
+        attendance_icon.click()
+
+        timeSleep.sleep(1);
+
+        check_in_time = get_check_in_time(driver)
+        
+        return f"User {user_name} successfully checked in at {check_in_time}"
 
     except Exception as e:
         print('😭😭 FAILED 😭😭 - Error:', str(e))
@@ -110,12 +123,12 @@ def check_in_thread(self):
 
     if should_check_in(self):
         status = check_in(self)
-        MessageBox.show_message_edit_config(title, status)
+        show_message_edit_config(title, status)
 
     elif current_day not in self.weekdays:
-        MessageBox.show_message_edit_config(title, "Check-in not triggered - Today is not a configured weekday")
+        show_message_edit_config(title, "Check-in not triggered - Today is not a configured weekday")
         
     else:
-        MessageBox.show_message_edit_config(title, "Check-in not triggered - Not within the configured time frame")
+        show_message_edit_config(title, "Check-in not triggered - Not within the configured time frame")
 
 
