@@ -1,9 +1,8 @@
-import json
 import os
-from addToStartup import add_to_startup, is_added_to_startup
 
-from config_ui import ConfigUI
-from check_in import check_in_thread
+from UI.config_ui import ConfigUI
+from core.check_in import check_in_thread
+from utils.addToStartup import add_to_startup, is_added_to_startup
 from utils.common import decrypt_data, getDataPath
 
 

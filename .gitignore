@@ -92,8 +92,8 @@ poetry.toml
 
 
 # json
-*.json
 *.spec
+*.txt
 
 # folder
 output

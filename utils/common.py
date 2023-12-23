@@ -8,14 +8,16 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from tkinter import messagebox
 import requests
 
-def getIconPath():
-    script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-    icon_path = os.path.join(script_dir, "assets", "clock.ico")
+    
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
 
-    if os.path.exists(icon_path):
-        return icon_path
-    else:
-        return None
+    return os.path.join(base_path, relative_path)
 
 
 def getDataPath():

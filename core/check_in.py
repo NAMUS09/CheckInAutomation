@@ -1,7 +1,7 @@
 import time as timeSleep
 
 from selenium import webdriver
-from showMessage import show_message_edit_config
+from UI.showMessage import show_message_edit_config
 from datetime import datetime, time
 from selenium.webdriver.common.by import By
 from utils.common import url_reachable, show_message

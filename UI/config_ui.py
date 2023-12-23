@@ -1,9 +1,9 @@
 import json
 import tkinter as tk
-from tkinter import  StringVar, messagebox
-from timePicker import TimePicker
+from tkinter import  StringVar
+from UI.timePicker import TimePicker
 from utils.geometry import Geometry
-from utils.common import decrypt_data, encrypt_data, getIconPath, getDataPath, show_message
+from utils.common import decrypt_data, encrypt_data, getDataPath, resource_path, show_message
 
 
 class ConfigUI:
@@ -167,7 +167,7 @@ class ConfigUI:
     def showConfigUI(edit = False):
         root = tk.Tk()
         
-        path  = getIconPath()
+        path  = resource_path("assets/clock.ico")
         if path:
              root.iconbitmap(default=path)
     

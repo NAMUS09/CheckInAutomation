@@ -1,9 +1,8 @@
-import os
-import sys
+import json
 import tkinter as tk
-from config_ui import ConfigUI
+from UI.config_ui import ConfigUI
 from PIL import Image, ImageTk
-from utils.common import getIconPath 
+from utils.common import resource_path 
 from utils.geometry import Geometry
 
 class MessageBox:
@@ -11,20 +10,30 @@ class MessageBox:
     def __init__(self, root, title, message):
         self.root = root
         self.root.title(title)
-
-
-        # png_path = "./assets/info.png"
-        script_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
-        png_path  = os.path.join(script_dir, "assets", "info.png")
-
+        
+        png_path = resource_path("assets/info.png")
+        
         common_frame = tk.Frame(root, padx=5, pady=3)
         common_frame.grid(row=0, column=0, sticky="nsew")
 
         # UI elements
 
+        # software version
+        config_json_path = resource_path("config.json")
+
+        # Read the configuration from the JSON file
+        with open(config_json_path, 'r') as config_file:
+            config = json.load(config_file) 
+
+        # return the app version from the configuration
+        app_version = config.get('app_version', '1.0.0') #default value
+
+        app_version_label = tk.Label(common_frame, text=f"Version: {app_version}", foreground="#4d5254", compound="left")
+        app_version_label.grid(row=0, column=0, pady=2, padx=2, sticky="w")
+
         # Edit Configuration Label
         edit_config_label = tk.Label(common_frame, text="Edit Configuration", foreground="blue", cursor="hand2", compound="right")
-        edit_config_label.grid(row=0, column=-0, pady=2, padx=2, sticky="e")
+        edit_config_label.grid(row=0, column=0, pady=2, padx=2, sticky="e")
         edit_config_label.bind("<Button-1>", self.edit_config_clicked)
 
 
@@ -82,7 +91,7 @@ class MessageBox:
 def show_message_edit_config(title: str, message):
     root = tk.Tk()
 
-    path  = getIconPath()
+    path  = resource_path("assets/clock.ico")
     if path:
             root.iconbitmap(default=path)
 

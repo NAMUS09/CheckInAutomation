@@ -15,11 +15,6 @@ Automate the check-in process for a web application using Selenium.
 ## Prerequisites
 
 - Python 3.11
-- Selenium library
-- Pillow library
-- Pyinstaller library
-- Requests library
-- Cryptography library
 
 ## Getting Started
 
@@ -35,7 +30,7 @@ Automate the check-in process for a web application using Selenium.
 2. Install dependencies:
 
    ```bash
-   pip install selenium pillow pyinstaller requests cryptography
+   pip install selenium pillow pyinstaller requests cryptography pyinstaller-versionfile
    ```
 
 ### Usage
@@ -49,7 +44,7 @@ python main_app.py
 Build the application exe:
 
 ```bash
-pyinstaller --noconsole --onefile --clean --icon=assets\clock.ico --add-data assets;assets --name=CheckInAutomation main.py
+python release/build.py
 ```
 
 Build the uninstall exe:
