@@ -8,9 +8,6 @@ Automate the check-in process for a web application using Selenium.
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Usage](#usage)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Prerequisites
 
@@ -23,8 +20,8 @@ Automate the check-in process for a web application using Selenium.
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/check-in-automation.git
-   cd check-in-automation
+   git clone https://github.com/NAMUS09/CheckInAutomation.git
+   cd CheckInAutomation
    ```
 
 2. Install dependencies:

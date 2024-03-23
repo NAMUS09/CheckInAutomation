@@ -7,9 +7,10 @@ from utils.geometry import Geometry
 
 class MessageBox:
 
-    def __init__(self, root, title, message):
+    def __init__(self, root, title, message, showReCheckIn):
         self.root = root
         self.root.title(title)
+        self.reCheckInClicked = False
         
         png_path = resource_path("assets/info.png")
         
@@ -51,6 +52,7 @@ class MessageBox:
         footer_frame = tk.Frame(root, bg="#d9d9d9")
         footer_frame.grid(row=1, column=0, columnspan=3, sticky="nsew")
 
+
         # OK Button in the frame
  
         ok_button = tk.Button(footer_frame, text = 'OK', fg = 'black', bg="white", bd=0, width=8,command=self.ok_button_clicked) 
@@ -63,6 +65,15 @@ class MessageBox:
         # Set focus on the OK button
         root.after(1, lambda: ok_button.focus_set())
 
+        if showReCheckIn:
+            # Retry Check-In Button in the frame
+    
+            retry_button = tk.Button(footer_frame, text = 'Retry Check-In', fg = 'black', bg="white", bd=0, width=12,command=self.reCheckIn_button_clicked) 
+        
+            retry_button.pack(side="right", pady=8, padx=5)
+
+            # Bind the Enter key to trigger the OK button
+            root.bind('<Return>', lambda event: retry_button.invoke())
 
         # Disable maximize button and set initial size
         self.root.resizable(False, False)
@@ -86,15 +97,22 @@ class MessageBox:
     
     def ok_button_clicked(self):
         self.root.destroy()
+
+    def reCheckIn_button_clicked(self):
+        self.reCheckInClicked = True  
+        self.root.destroy()
+
         
 
-def show_message_edit_config(title: str, message):
+def show_message_edit_config(title: str, message: str, showReCheckIn = False):
     root = tk.Tk()
 
     path  = resource_path("assets/clock.ico")
     if path:
             root.iconbitmap(default=path)
 
-    MessageBox(root, title, message)
+    messageBox = MessageBox(root, title, message, showReCheckIn)
     root.mainloop()
+
+    return messageBox.reCheckInClicked
 

@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from tkinter import messagebox
 import requests
+from requests.exceptions import RequestException, ConnectionError
 
     
 def resource_path(relative_path):
@@ -34,8 +35,15 @@ def show_message(title, message):
     
 
 def url_reachable(url):
-    req = requests.head(url)
-    return req.status_code == 200
+    try:
+        req = requests.head(url)
+        return req.status_code == 200
+    except ConnectionError as e:
+        print(f"Connection Error: {e}")
+        return False
+    except RequestException as e:
+        print(f"Request Exception: {e}")
+        return False
 
 
 def get_cipher_suite():
