@@ -31,7 +31,7 @@ class MessageBox:
         # fetch latest version from github
         app_release_response = get_latest_release_version()
         self.assets_url = app_release_response.get("assets_url")
-        if(version.parse(app_release_response.get("version")) < version.parse(app_version)):
+        if(version.parse(app_release_response.get("version")) > version.parse(app_version)):
             #Load the update PNG image
             update_icon = Image.open(update_icon_path)
             update_icon.thumbnail((20, 20))
