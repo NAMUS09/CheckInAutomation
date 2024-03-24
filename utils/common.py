@@ -1,7 +1,5 @@
 import json
-import os
 import base64
-import sys
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -9,25 +7,7 @@ from tkinter import messagebox
 import requests
 from requests.exceptions import RequestException, ConnectionError
 
-    
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-
-def getDataPath():
-    data_directory = os.path.join(os.path.expanduser("~"), ".checkInAutomation")
-    
-    if not os.path.exists(data_directory):
-        os.makedirs(data_directory)
-
-    return os.path.join(data_directory, "preferences.json")
+from utils.os import resource_path
 
 
 def show_message(title, message):
@@ -44,7 +24,7 @@ def url_reachable(url):
     except RequestException as e:
         print(f"Request Exception: {e}")
         return False
-
+    
 
 def get_cipher_suite():
     # Passphrase to derive the key
@@ -61,6 +41,18 @@ def get_cipher_suite():
 
      # Initialize and return the Fernet cipher with the derived key
     return  Fernet(key)
+
+
+def get_current_app_version():
+    # software version
+    config_json_path = resource_path("config.json")
+
+    # Read the configuration from the JSON file
+    with open(config_json_path, 'r') as config_file:
+        config = json.load(config_file) 
+
+    # return the app version from the configuration
+    return config.get('app_version', '1.0.0')
 
 
 def encrypt_data(data: dict[str,any]):

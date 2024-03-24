@@ -1,9 +1,8 @@
 import os
-
 from UI.config_ui import ConfigUI
 from core.check_in import check_in_thread
-from utils.addToStartup import add_to_startup, is_added_to_startup
-from utils.common import decrypt_data, getDataPath
+from utils import add_to_startup, is_added_to_startup, decrypt_data, getDataPath,get_old_exe_paths,get_current_app_version
+from utils.os import delete_file
 
 
 class CheckInApp:
@@ -15,6 +14,7 @@ class CheckInApp:
         self.start_time =  ""
         self.end_time =  ""
         self.weekdays =  set()
+        self.appVersion = ""
 
         self.cancelled = False
 
@@ -29,7 +29,7 @@ class CheckInApp:
         if not self.cancelled and self.preference_exists:
             self.load_preferences()
 
-
+    
     def load_preferences(self):
         data_path = getDataPath()
 
@@ -50,6 +50,14 @@ class CheckInApp:
 if __name__ == '__main__':
     if not is_added_to_startup():
         add_to_startup()
+
+    # Get old exe paths, if exists in current app executable directory
+    old_exe_paths = get_old_exe_paths(get_current_app_version())
+
+    if old_exe_paths and len(old_exe_paths) > 0:
+        for path in old_exe_paths:
+            # Delete the old executable files
+            delete_file(path)
 
     app = CheckInApp()
 

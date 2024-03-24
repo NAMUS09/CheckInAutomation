@@ -4,14 +4,14 @@ from selenium import webdriver
 from UI.showMessage import show_message_edit_config
 from datetime import datetime, time
 from selenium.webdriver.common.by import By
-from utils.common import url_reachable, show_message
+from utils.common import url_reachable
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
 class CheckInConditon:
-    def __init__(self, start_time: str, end_time: str, weekdays: set()):
+    def __init__(self, start_time: str, end_time: str, weekdays: set()): # type: ignore
         self.start_time = start_time
         self.end_time = end_time
         self.weekdays = weekdays
@@ -89,6 +89,8 @@ def check_in(self):
             print("Already checked in for user:", user_name)
             return {'status': "success", 'message':f"User {user_name} has already checked in at {check_in_time}"}
             
+        timeSleep.sleep(1)
+        
         check_in_button = driver.find_elements(By.ID, 'btnCheckIn')[0]
 
         if not check_in_button:

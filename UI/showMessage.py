@@ -1,8 +1,13 @@
+import subprocess
+import sys
+from tkinter import messagebox
+from packaging import version
 import json
 import tkinter as tk
 from UI.config_ui import ConfigUI
 from PIL import Image, ImageTk
-from utils.common import resource_path 
+from utils import  resource_path, download_latest_app, get_latest_release_version ,get_current_app_version
+from utils.common import show_message
 from utils.geometry import Geometry
 
 class MessageBox:
@@ -13,24 +18,31 @@ class MessageBox:
         self.reCheckInClicked = False
         
         png_path = resource_path("assets/info.png")
+        update_icon_path = resource_path("assets/update.png")
         
         common_frame = tk.Frame(root, padx=5, pady=3)
         common_frame.grid(row=0, column=0, sticky="nsew")
 
         # UI elements
-
-        # software version
-        config_json_path = resource_path("config.json")
-
-        # Read the configuration from the JSON file
-        with open(config_json_path, 'r') as config_file:
-            config = json.load(config_file) 
-
-        # return the app version from the configuration
-        app_version = config.get('app_version', '1.0.0') #default value
-
+        app_version = get_current_app_version() 
         app_version_label = tk.Label(common_frame, text=f"Version: {app_version}", foreground="#4d5254", compound="left")
         app_version_label.grid(row=0, column=0, pady=2, padx=2, sticky="w")
+
+        # fetch latest version from github
+        app_release_response = get_latest_release_version()
+        self.assets_url = app_release_response.get("assets_url")
+        if(version.parse(app_release_response.get("version")) < version.parse(app_version)):
+            #Load the update PNG image
+            update_icon = Image.open(update_icon_path)
+            update_icon.thumbnail((20, 20))
+            update_icon = ImageTk.PhotoImage(update_icon)            
+            #label
+            app_update_label = tk.Label(common_frame,image=update_icon, text=f"Update Available", foreground="#4ec43f", cursor="hand2", compound="left", padx=5)
+            if update_icon:
+                app_update_label.image = update_icon
+            app_update_label.grid(row=0, column=0, pady=2, padx=2, sticky="s")
+            app_update_label.bind("<Button-1>", self.update_available_clicked)
+
 
         # Edit Configuration Label
         edit_config_label = tk.Label(common_frame, text="Edit Configuration", foreground="blue", cursor="hand2", compound="right")
@@ -81,7 +93,6 @@ class MessageBox:
         # Force the window to update its geometry based on the widget sizes
         self.root.update_idletasks()
 
-
         # Bring the dialog window to the top
         root.attributes('-topmost', True)
         root.focus_force()
@@ -89,22 +100,38 @@ class MessageBox:
         geometry_string = Geometry.calculateCenter(root, self.root.winfo_reqwidth(), self.root.winfo_reqheight())
         root.geometry(geometry_string)
 
+    def update_available_clicked(self, event):
+        application_exe_path = download_latest_app(self.assets_url )
+
+        if application_exe_path is not None:
+            # Show update notification
+            result = messagebox.showinfo("Update Successful", "The application has been successfully updated. Click ok to restart")          
+            if result:
+                self.run_new_app(application_exe_path=application_exe_path)
+    
+    def run_new_app(self, application_exe_path):
+        self.root.destroy()
+        # Run the new executable
+        subprocess.Popen(application_exe_path)
+        self.close_program()
+
+    def close_program(self, event=None):
+        # Close the program
+        sys.exit()
 
     def edit_config_clicked(self, event):
         self.root.destroy()
         ConfigUI.showConfigUI(True)
 
-    
     def ok_button_clicked(self):
         self.root.destroy()
 
     def reCheckIn_button_clicked(self):
         self.reCheckInClicked = True  
         self.root.destroy()
-
         
 
-def show_message_edit_config(title: str, message: str, showReCheckIn = False):
+def show_message_edit_config(title: str, message: str, showReCheckIn = False): 
     root = tk.Tk()
 
     path  = resource_path("assets/clock.ico")

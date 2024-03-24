@@ -11,7 +11,7 @@ pyinstaller_versionfile.create_versionfile(
     output_file="versionfile.txt",
     version=app_version,
     company_name="Suman Shrestha",
-    file_description="This software automates check-in processes.",
+    file_description="CheckInAutomation",
     internal_name="CheckInAutomation",
     legal_copyright="© Suman Shrestha. All rights reserved.",
     original_filename="CheckInAutomation.exe",

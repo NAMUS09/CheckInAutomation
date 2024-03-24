@@ -1,9 +1,8 @@
-import json
 import tkinter as tk
 from tkinter import  StringVar
 from UI.timePicker import TimePicker
+from utils import  getDataPath, resource_path,decrypt_data, encrypt_data, show_message
 from utils.geometry import Geometry
-from utils.common import decrypt_data, encrypt_data, getDataPath, resource_path, show_message
 
 
 class ConfigUI:
