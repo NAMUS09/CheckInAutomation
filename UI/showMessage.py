@@ -30,18 +30,19 @@ class MessageBox:
 
         # fetch latest version from github
         app_release_response = get_latest_release_version()
-        self.assets_url = app_release_response.get("assets_url")
-        if(version.parse(app_release_response.get("version")) > version.parse(app_version)):
-            #Load the update PNG image
-            update_icon = Image.open(update_icon_path)
-            update_icon.thumbnail((20, 20))
-            update_icon = ImageTk.PhotoImage(update_icon)            
-            #label
-            app_update_label = tk.Label(common_frame,image=update_icon, text=f"Update Available", foreground="#4ec43f", cursor="hand2", compound="left", padx=5)
-            if update_icon:
-                app_update_label.image = update_icon
-            app_update_label.grid(row=0, column=0, pady=2, padx=2, sticky="s")
-            app_update_label.bind("<Button-1>", self.update_available_clicked)
+        if app_release_response.get("status") =="success":
+            self.assets_url = app_release_response.get("assets_url")
+            if(version.parse(app_release_response.get("version")) > version.parse(app_version)):
+                #Load the update PNG image
+                update_icon = Image.open(update_icon_path)
+                update_icon.thumbnail((20, 20))
+                update_icon = ImageTk.PhotoImage(update_icon)            
+                #label
+                app_update_label = tk.Label(common_frame,image=update_icon, text=f"Update Available", foreground="#4ec43f", cursor="hand2", compound="left", padx=5)
+                if update_icon:
+                    app_update_label.image = update_icon
+                app_update_label.grid(row=0, column=0, pady=2, padx=2, sticky="s")
+                app_update_label.bind("<Button-1>", self.update_available_clicked)
 
 
         # Edit Configuration Label
