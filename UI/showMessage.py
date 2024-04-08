@@ -122,7 +122,15 @@ class MessageBox:
 
     def edit_config_clicked(self, event):
         self.root.destroy()
-        ConfigUI.showConfigUI(True)
+        response = ConfigUI.showConfigUI(True)
+        isSavedClicked = response.get("saved")
+        # Show recheck in notification
+        if isSavedClicked :
+            result = messagebox.askokcancel("Config Updated", "Press 'ok' to recheck in timesheet")          
+            if result:
+                self.reCheckInClicked = True
+            else:
+                self.close_program()
 
     def ok_button_clicked(self):
         self.root.destroy()

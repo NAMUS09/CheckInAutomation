@@ -6,7 +6,8 @@ from datetime import datetime, time
 from selenium.webdriver.common.by import By
 from utils.common import url_reachable
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -56,6 +57,8 @@ def check_in(self):
 
     user_name = self.username
     password = self.password
+    status_type = self.status_type
+    session_type = self.session_type
 
     chrome_options = Options()
     chrome_options.add_argument('--headless')
@@ -96,8 +99,22 @@ def check_in(self):
         if not check_in_button:
             print("User logged in but couldn't check in")
             return {'status': "error", 'message': f"User {user_name} is logged in but couldn't complete the check-in process"}
+        
+        # check dropdown before check button click
+        status_type_dropdown = driver.find_element(By.NAME,"WorkType_input")
+        status_type_dropdown.send_keys(status_type)
+        timeSleep.sleep(1)
+        status_type_dropdown.send_keys(Keys.RETURN)
+        status_type_dropdown.send_keys(Keys.TAB)
 
+        sesstion_type_dropdown = driver.find_element(By.NAME,"Session_input")
+        sesstion_type_dropdown.send_keys(session_type)
+        timeSleep.sleep(1)
+        sesstion_type_dropdown.send_keys(Keys.RETURN)
+        sesstion_type_dropdown.send_keys(Keys.TAB)
+        
         check_in_button.click()
+        timeSleep.sleep(1)
         print("😍😍 SUCCESS 😍😍 - Checked in for user:", user_name)
 
         # get element with the 'onclick' attribute set to 'openAttendance()'
