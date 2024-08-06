@@ -44,7 +44,26 @@ def should_check_in(checkIn: CheckInConditon):
 def get_check_in_time(driver: webdriver):
     date_time_element = driver.find_elements(By.ID, 'spanInDateTime')[0]
     return date_time_element.get_attribute('innerHTML')
+
+
+def is_today(check_in_time_str):
+    # Define the format of the date string
+    date_format = '%d/%m/%Y %I:%M %p'
     
+    # Parse the check-in time string into a datetime object
+    check_in_time = datetime.strptime(check_in_time_str, date_format)
+    
+    # Get today's date
+    today = datetime.now()
+    
+    # Compare the date part of the check-in time with today's date
+    return check_in_time.date() == today.date()
+
+
+def check_out(driver: webdriver):
+    check_out_id = driver.find_elements(By.ID, 'btnCheckOut')[0]
+    check_out_id.click()
+    timeSleep.sleep(1)
 
 
 def check_in(self):
@@ -88,10 +107,18 @@ def check_in(self):
 
         check_in_time = get_check_in_time(driver)
 
-        if check_in_time != None and check_in_time != '':
-            print("Already checked in for user:", user_name)
-            return {'status': "success", 'message':f"User {user_name} has already checked in at {check_in_time}"}
+        if check_in_time:
+            status = "success"
+            if is_today(check_in_time):
+                message = f"User {user_name} has already checked in today at {check_in_time}"
+            else:
+                check_out(driver)
+                status = "error"
+                message = f"User {user_name} has not checked out at {check_in_time}.User successfully checked out."
             
+            print(message)
+            return {'status': status, 'message': message}
+    
         timeSleep.sleep(1)
         
         check_in_button = driver.find_elements(By.ID, 'btnCheckIn')[0]
