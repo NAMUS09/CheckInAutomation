@@ -1,6 +1,6 @@
 {
   "app_name": "CheckInAutomation",
-  "app_version": "1.2.7",
+  "app_version": "1.2.8",
   "script_name": "main.py",
   "noconsole": true,
   "onefile": true,

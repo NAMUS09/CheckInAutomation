@@ -47,5 +47,5 @@ python release/build.py
 Build the uninstall exe:
 
 ```bash
-pyinstaller --noconsole --onefile --clean --icon=assets\uninstall.ico --add-data assets;assets --name=UnInstaller uninstall\main.py
+pyinstaller --noconsole --onefile --clean --icon=assets\uninstall.ico --add-data "assets;assets" --name=UnInstaller uninstall\main.py
 ```
