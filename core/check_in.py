@@ -76,8 +76,8 @@ def check_in(self):
 
     user_name = self.username
     password = self.password
-    status_type = self.status_type
-    session_type = self.session_type
+    # status_type = self.status_type
+    # session_type = self.session_type
 
     chrome_options = Options()
     chrome_options.add_argument('--headless')
@@ -128,17 +128,17 @@ def check_in(self):
             return {'status': "error", 'message': f"User {user_name} is logged in but couldn't complete the check-in process"}
         
         # check dropdown before check button click
-        status_type_dropdown = driver.find_element(By.NAME,"WorkType_input")
-        status_type_dropdown.send_keys(status_type)
-        timeSleep.sleep(1)
-        status_type_dropdown.send_keys(Keys.RETURN)
-        status_type_dropdown.send_keys(Keys.TAB)
+        # status_type_dropdown = driver.find_element(By.NAME,"WorkType_input")
+        # status_type_dropdown.send_keys(status_type)
+        # timeSleep.sleep(1)
+        # status_type_dropdown.send_keys(Keys.RETURN)
+        # status_type_dropdown.send_keys(Keys.TAB)
 
-        sesstion_type_dropdown = driver.find_element(By.NAME,"Session_input")
-        sesstion_type_dropdown.send_keys(session_type)
-        timeSleep.sleep(1)
-        sesstion_type_dropdown.send_keys(Keys.RETURN)
-        sesstion_type_dropdown.send_keys(Keys.TAB)
+        # sesstion_type_dropdown = driver.find_element(By.NAME,"Session_input")
+        # sesstion_type_dropdown.send_keys(session_type)
+        # timeSleep.sleep(1)
+        # sesstion_type_dropdown.send_keys(Keys.RETURN)
+        # sesstion_type_dropdown.send_keys(Keys.TAB)
         
         check_in_button.click()
         timeSleep.sleep(1)

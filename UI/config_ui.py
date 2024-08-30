@@ -17,16 +17,16 @@ class ConfigUI:
         self.alert_title = "Configuration Alert"
 
         # Define options for the status type
-        self.status_type_options = ["On-Duty", "Work From Home", "Work From Office"]
+        #self.status_type_options = ["On-Duty", "Work From Home", "Work From Office"]
 
         # Define options for the status type
-        self.status_session_options = ["First Half", "Second Half", "Full Day"]
+        #self.status_session_options = ["First Half", "Second Half", "Full Day"]
 
         # Variables to store user input
         self.username_var = tk.StringVar()
         self.password_var = tk.StringVar()
-        self.status_type_var = tk.StringVar(value=self.status_type_options[2])
-        self.status_session_var = tk.StringVar(value=self.status_session_options[2])
+        #self.status_type_var = tk.StringVar(value=self.status_type_options[2])
+        #self.status_session_var = tk.StringVar(value=self.status_session_options[2])
         self.start_time_var = tk.StringVar(value="09:00")
         self.end_time_var = tk.StringVar(value="11:00")
         default_weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
@@ -50,30 +50,30 @@ class ConfigUI:
         self.password_entry = tk.Entry(common_frame, textvariable=self.password_var, show='*')
         self.password_entry_grid = self.password_entry.grid(row=1, column=1,columnspan=2, sticky="ew")
 
-        tk.Label(common_frame, text="Status Type:",pady=5).grid(row=2, column=0)
-        self.status_type = tk.OptionMenu(common_frame, self.status_type_var, *self.status_type_options,command=self.on_status_type_changed)
-        self.status_type_grid = self.status_type.grid(row=2, column=1,columnspan=2, sticky="ew")
+        # tk.Label(common_frame, text="Status Type:",pady=5).grid(row=2, column=0)
+        # self.status_type = tk.OptionMenu(common_frame, self.status_type_var, *self.status_type_options,command=self.on_status_type_changed)
+        # self.status_type_grid = self.status_type.grid(row=2, column=1,columnspan=2, sticky="ew")
 
-        tk.Label(common_frame, text="Status Session:",pady=5).grid(row=3, column=0)
-        self.status_session = tk.OptionMenu(common_frame, self.status_session_var, *self.status_session_options,command=self.on_status_session_changed)
-        self.status_session_grid = self.status_session.grid(row=3, column=1,columnspan=2, sticky="ew")
+        # tk.Label(common_frame, text="Status Session:",pady=5).grid(row=3, column=0)
+        # self.status_session = tk.OptionMenu(common_frame, self.status_session_var, *self.status_session_options,command=self.on_status_session_changed)
+        # self.status_session_grid = self.status_session.grid(row=3, column=1,columnspan=2, sticky="ew")
 
-        tk.Label(common_frame, text="Check-in Time:",pady=5).grid(row=4, column=0)
+        tk.Label(common_frame, text="Check-in Time:",pady=5).grid(row=2, column=0)
         self.start_time_picker = TimePicker(common_frame, self.start_time_var)
-        self.start_time_picker.grid(row=4, column=1)
+        self.start_time_picker.grid(row=2, column=1)
 
-        tk.Label(common_frame, text="End Time:",pady=5).grid(row=5, column=0)
+        tk.Label(common_frame, text="End Time:",pady=5).grid(row=3, column=0)
         self.end_time_picker = TimePicker(common_frame, self.end_time_var)
-        self.end_time_picker.grid(row=5, column=1)
+        self.end_time_picker.grid(row=3, column=1)
 
         # Weekday checkboxes
-        tk.Label(common_frame, text="Select Weekdays:", pady=5).grid(row=6, column=0, columnspan=2, sticky='w')
+        tk.Label(common_frame, text="Select Weekdays:", pady=5).grid(row=4, column=0, columnspan=2, sticky='w')
         self.weekday_checkboxes = []
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
         for i, day in enumerate(weekdays):
             var = tk.IntVar(value=1 if i in self.weekdays_var else 0)
             checkbox = tk.Checkbutton(common_frame, text=day, variable=var, onvalue=1, offvalue=0, command=self.update_selected_days)
-            checkbox.grid(row=i // 2 + 6, column=i % 2 +1, sticky='w')
+            checkbox.grid(row=i // 2 + 4, column=i % 2 +1, sticky='w')
             self.weekday_checkboxes.append((day, var))
 
 
@@ -94,7 +94,7 @@ class ConfigUI:
         # Disable maximize button and set initial size
         self.root.resizable(False, False)
 
-        geometry_string = Geometry.calculateCenter(root, 330,340)
+        geometry_string = Geometry.calculateCenter(root, 330,280)
         root.geometry(geometry_string)
 
     def on_status_type_changed(self, selection):
@@ -119,8 +119,8 @@ class ConfigUI:
                 
             self.username_var = StringVar(value = preferences.get('username', ''))
             self.password_var = StringVar(value = preferences.get('password', ''))
-            self.status_type_var = StringVar(value= preferences.get('status_type', self.status_type_options[2]))
-            self.status_session_var = StringVar(value= preferences.get('status_session', self.status_session_options[2]))
+            #self.status_type_var = StringVar(value= preferences.get('status_type', self.status_type_options[2]))
+            #self.status_session_var = StringVar(value= preferences.get('status_session', self.status_session_options[2]))
             self.start_time_var = StringVar(value = preferences.get('start_time', ''))
             self.end_time_var = StringVar(value = preferences.get('end_time', ''))
             self.weekdays_var = set(preferences.get('weekdays', []))
@@ -172,8 +172,8 @@ class ConfigUI:
         preferences = {
             'username': self.username_var.get(),
             'password': self.password_var.get(),
-            'status_type': self.status_type_var.get(),
-            'status_session': self.status_session_var.get(),
+            # 'status_type': self.status_type_var.get(),
+            # 'status_session': self.status_session_var.get(),
             'start_time': self.start_time_var.get(),
             'end_time': self.end_time_var.get(),
             'weekdays': list(self.weekdays_var),

@@ -11,8 +11,8 @@ class CheckInApp:
         # Variables to store user preferences
         self.username =  ""
         self.password =  ""
-        self.status_type = ""
-        self.session_type = ""
+        # self.status_type = ""
+        # self.session_type = ""
         self.start_time =  ""
         self.end_time =  ""
         self.weekdays =  set()
@@ -41,8 +41,8 @@ class CheckInApp:
 
         self.username = preferences.get('username', '')
         self.password = preferences.get('password', '')
-        self.status_type = preferences.get('status_type', '')
-        self.session_type = preferences.get('status_session', '')
+        # self.status_type = preferences.get('status_type', '')
+        # self.session_type = preferences.get('status_session', '')
         self.start_time = preferences.get('start_time', '')
         self.end_time = preferences.get('end_time', '')
         self.weekdays = set(preferences.get('weekdays', []))
@@ -52,10 +52,10 @@ class CheckInApp:
             return False
         if not self.password:
             return False
-        if not self.status_type:
-            return False 
-        if not self.session_type:
-            return False
+        # if not self.status_type:
+        #     return False 
+        # if not self.session_type:
+        #     return False
         if not self.start_time:
             return False 
         if not self.end_time:
