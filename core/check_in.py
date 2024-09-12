@@ -1,3 +1,6 @@
+import os
+import platform
+import shutil
 import time as timeSleep
 
 from selenium import webdriver
@@ -6,6 +9,7 @@ from datetime import datetime, time
 from selenium.webdriver.common.by import By
 from utils.common import url_reachable
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
@@ -66,6 +70,85 @@ def check_out(driver: webdriver):
     timeSleep.sleep(1)
 
 
+
+def get_browser():
+    system = platform.system()
+
+    chrome_paths = []
+    edge_paths = []
+
+    # Windows specific paths for Chrome and Edge
+    if system == "Windows":
+        chrome_paths = [
+            shutil.which("chrome"),
+            shutil.which("chrome.exe"),
+            os.path.join(os.getenv('ProgramFiles(x86)'), "Google/Chrome/Application/chrome.exe"),
+            os.path.join(os.getenv('ProgramFiles'), "Google/Chrome/Application/chrome.exe")
+        ]
+        edge_paths = [
+            shutil.which("msedge"),
+            shutil.which("msedge.exe"),
+            os.path.join(os.getenv('ProgramFiles(x86)'), "Microsoft/Edge/Application/msedge.exe"),
+            os.path.join(os.getenv('ProgramFiles'), "Microsoft/Edge/Application/msedge.exe")
+        ]
+
+    # Linux specific paths for Chrome and Edge
+    elif system == "Linux":
+        chrome_paths = [
+            shutil.which("google-chrome"),
+            shutil.which("chrome"),
+            "/usr/bin/google-chrome",
+            "/usr/local/bin/google-chrome"
+        ]
+        edge_paths = [
+            shutil.which("microsoft-edge"),
+            "/usr/bin/microsoft-edge",
+            "/usr/local/bin/microsoft-edge"
+        ]
+
+    # macOS specific paths for Chrome and Edge
+    elif system == "Darwin":
+        chrome_paths = [
+            shutil.which("chrome"),
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        ]
+        edge_paths = [
+            shutil.which("msedge"),
+            "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
+        ]
+
+    # Check for Chrome installation
+    for path in chrome_paths:
+        if path and os.path.exists(path):
+            return "Chrome"
+
+    # Check for Edge installation
+    for path in edge_paths:
+        if path and os.path.exists(path):
+            return "Edge"
+
+    return None  # Return None if neither browser is found
+
+
+def get_chrome_driver() -> webdriver:
+    # Use Chrome
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+
+    driver = webdriver.Chrome(options=chrome_options)
+
+    return driver
+
+def get_edge_driver()-> webdriver:
+    # Use Microsoft Edge
+    edge_options = EdgeOptions()
+    edge_options.add_argument('--headless')
+
+    driver = webdriver.Edge(options=edge_options)
+
+    return driver
+
+
 def check_in(self):
     url = "https://timesheet.cetastech.com/"
 
@@ -79,10 +162,12 @@ def check_in(self):
     # status_type = self.status_type
     # session_type = self.session_type
 
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
+    browser = get_browser()
 
-    driver = webdriver.Chrome(options=chrome_options)
+    if(browser is None):
+        return {'status': "error", 'message': "Couldn't initate the check in. Neither Chrome nor Edge is installed!!"}
+
+    driver =  get_chrome_driver() if browser is "Chrome" else get_edge_driver()
 
     try:
         driver.get(url)

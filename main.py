@@ -92,7 +92,7 @@ if __name__ == '__main__':
             delete_file(path)
 
     app = CheckInApp()
-
+    
     if not app.cancelled and app.preference_exists:
         app.check_in()
    
