@@ -2,6 +2,7 @@ import os
 from UI.config_ui import ConfigUI
 from core.check_in import check_in_thread
 from utils import add_to_startup, is_added_to_startup, decrypt_data, getDataPath,get_old_exe_paths,get_current_app_version,show_message
+from utils.logging import log_error, log_info
 from utils.os import delete_file
 
 
@@ -65,22 +66,28 @@ class CheckInApp:
         return True
     
     def check_in(self):
+        log_info("Validating saved data...")
         validate = self.validate_saved_data()
         if not validate:
             response = ConfigUI.showConfigUI(edit=True)
             if response.get("cancelled"):
-                show_message("Error","Check-in cancelled. Please update all configurations before checking in the timesheet.")
+                message = "Check-in cancelled. Please update all configurations before checking in the timesheet."
+                log_error(message)
+                show_message("Error",message)
                 return
             
             if response.get("saved"):
                 # load again updated data
                 self.load_preferences()
-
+        
+        log_info("Validated saved data...")
         check_in_thread(self)
 
 
 if __name__ == '__main__':
+    log_info("App started..")
     if not is_added_to_startup():
+        log_info("Adding application to start-up")
         add_to_startup()
 
     # Get old exe paths, if exists in current app executable directory
@@ -88,11 +95,15 @@ if __name__ == '__main__':
 
     if old_exe_paths and len(old_exe_paths) > 0:
         for path in old_exe_paths:
+            log_info("deleting old exes...")
             # Delete the old executable files
             delete_file(path)
 
     app = CheckInApp()
     
     if not app.cancelled and app.preference_exists:
+        log_info("Ready to Check in")
         app.check_in()
+
+    log_info("App Ended..")
    

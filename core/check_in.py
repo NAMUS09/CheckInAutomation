@@ -14,6 +14,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
+from utils.logging import log_error, log_info
+
 
 class CheckInConditon:
     def __init__(self, start_time: str, end_time: str, weekdays: set()): # type: ignore
@@ -150,11 +152,17 @@ def get_edge_driver()-> webdriver:
 
 
 def check_in(self):
+    message = "";
     url = "https://timesheet.cetastech.com/"
 
+    log_info(f"Url: {url}")
+
     if not url_reachable(url):
+        message = "Timesheet url is not reachable at the moment!!"
+        log_error(message)
+
         ##show_message("Error", "Timesheet url is not reachable at the moment!!")
-        return {'status': "error", 'message':"Timesheet url is not reachable at the moment!!", 'retry': True}
+        return {'status': "error", 'message': message, 'retry': True}
     
 
     user_name = self.username
@@ -165,9 +173,11 @@ def check_in(self):
     browser = get_browser()
 
     if(browser is None):
-        return {'status': "error", 'message': "Couldn't initate the check in. Neither Chrome nor Edge is installed!!"}
+        message = "Couldn't initate the check in. Neither Chrome nor Edge is installed!!"
+        log_error(message)
+        return {'status': "error", 'message': message}
 
-    driver =  get_chrome_driver() if browser is "Chrome" else get_edge_driver()
+    driver =  get_chrome_driver() if browser == "Chrome" else get_edge_driver()
 
     try:
         driver.get(url)
@@ -185,25 +195,35 @@ def check_in(self):
         check_id = driver.find_elements(By.ID, 'myid')
 
         if not check_id:
+            message = "Couldn't login. Please check your username and password"
+            log_error(message)
             ##show_message("Alert", "Couldn't login. Please check your username and password")
-            return {'status': "error", 'message': "Couldn't login. Please check your username and password"}
+            return {'status': "error", 'message': message}
 
-        print("😍😍 SUCCESS 😍😍 - Logged in for user:", user_name)
+        message =f"😍😍 SUCCESS 😍😍 - Logged in for user: {user_name}"
+        log_info(message)
+        print(message)
 
         check_in_time = get_check_in_time(driver)
 
         if check_in_time:
+            log_info("User already checked-in")
             status = "success"
             if is_today(check_in_time):
                 message = f"User {user_name} has already checked in today at {check_in_time}"
             else:
+                log_info("Check out starts..")
                 check_out(driver)
+                log_info("Check out ends..")
                 status = "error"
                 message = f"User {user_name} has not checked out at {check_in_time}.User successfully checked out."
             
+            log_info(message)
             print(message)
             return {'status': status, 'message': message}
     
+        log_info("User not checked-in")
+
         timeSleep.sleep(1)
         
         check_in_button = driver.find_elements(By.ID, 'btnCheckIn')[0]
@@ -227,7 +247,10 @@ def check_in(self):
         
         check_in_button.click()
         timeSleep.sleep(1)
-        print("😍😍 SUCCESS 😍😍 - Checked in for user:", user_name)
+
+        message = f"😍😍 SUCCESS 😍😍 - Checked in for user: {user_name}"
+        log_info(message)
+        print(message)
 
         # get element with the 'onclick' attribute set to 'openAttendance()'
         attendance_icon = driver.find_elements(By.CSS_SELECTOR, "[onclick='openAttendance()']")[0]
@@ -236,11 +259,16 @@ def check_in(self):
         timeSleep.sleep(1);
 
         check_in_time = get_check_in_time(driver)
+
+        message = f"User {user_name} successfully checked in at {check_in_time}"
+        log_info(message)
+        print(message)
         
-        return {'status': "success", 'message': f"User {user_name} successfully checked in at {check_in_time}" }
+        return {'status': "success", 'message':  message}
 
     except Exception as e:
         print('😭😭 FAILED 😭😭 - Error:', str(e))
+        log_error("Check-in failed!! Please try again later.")
         return { 'status': "error", 'message':  "Check-in failed!! Please try again later.", "retry": True }
 
     finally:
@@ -255,9 +283,11 @@ def check_in_thread(self):
     message = ""
     show_retry_button = False
 
+    
     while perform_check_in:
         if should_check_in(self):
             retry_attempt = 1
+            log_info(f"Check-in attempt {retry_attempt}")
 
             while retry_attempt <= retry_limit:
                 status = check_in(self)
@@ -274,6 +304,7 @@ def check_in_thread(self):
         else:
             message = "Check-in not triggered - Not within the configured time frame"
 
+        log_info(message)
         # Show message
         perform_check_in = show_message_edit_config(title, message, show_retry_button)
 
