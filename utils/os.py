@@ -39,12 +39,16 @@ def resource_path(relative_path):
 
 
 def getDataPath():
+    data_directory = get_data_dir()
+
+    return os.path.join(data_directory, "preferences.json")
+
+def get_data_dir():
     data_directory = os.path.join(os.path.expanduser("~"), ".checkInAutomation")
     
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
-
-    return os.path.join(data_directory, "preferences.json")
+    return data_directory
 
 
 def extract_version_from_filename(filename):

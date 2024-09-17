@@ -8,18 +8,19 @@ from pathlib import Path
 from utils import extract_zip, get_python_executable_directory, show_message, delete_file
 from utils.geometry import Geometry
 
-access_token = "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"
-headers = {
-    "Authorization": f"token {access_token}",
-    "Accept": "application/vnd.github.v3+json"
-}    
+# access_token = "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"
+# headers = {
+#     "Authorization": f"token {access_token}",
+#     "Accept": "application/vnd.github.v3+json"
+# }    
 
 
 def get_latest_release_version():
     api_url = "https://api.github.com/repos/NAMUS09/CheckInAutomation/releases/latest"
     
     try:
-        response = requests.get(api_url, headers=headers)
+        #response = requests.get(api_url, headers=headers)
+        response = requests.get(api_url)
         response.raise_for_status() 
         release_data = response.json()
         return { 'status': "success", 'version':  release_data['tag_name'].lstrip('v'), 'assets_url': release_data['assets_url']}
